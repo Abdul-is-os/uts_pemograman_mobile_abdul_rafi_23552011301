@@ -17,7 +17,6 @@ class ToDoAdapter(
     inner class ToDoViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         val textViewTodoText: TextView = itemView.findViewById(R.id.textview_todo_text)
         val checkBoxTodoItem: CheckBox = itemView.findViewById(R.id.checkbox_todo_item)
-
         fun bind(item: ToDoItem) {
             textViewTodoText.text = item.text
             checkBoxTodoItem.setOnCheckedChangeListener(null)
