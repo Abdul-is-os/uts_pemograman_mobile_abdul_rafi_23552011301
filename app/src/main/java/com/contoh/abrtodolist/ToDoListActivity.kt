@@ -1,37 +1,31 @@
-// Mendefinisikan package untuk kelas ini, sesuai dengan struktur proyek Anda.
 package com.contoh.abrtodolist
 
-// Impor kelas-kelas yang diperlukan dari Android SDK dan library pihak ketiga.
-import android.content.Context // Digunakan untuk mengakses SharedPreferences dan resource sistem lainnya.
-import android.content.Intent // Digunakan untuk navigasi antar Activity.
-import androidx.appcompat.app.AppCompatActivity // Kelas dasar untuk Activity yang menggunakan fitur AppCompat.
-import android.os.Bundle // Digunakan untuk menyimpan dan mengambil state Activity.
-import android.util.Log // Digunakan untuk logging (mencatat pesan untuk debugging).
-import android.view.Menu // Digunakan untuk membuat menu opsi di ActionBar/Toolbar.
-import android.view.MenuItem // Merepresentasikan item dalam sebuah Menu.
-import android.view.View // Kelas dasar untuk semua komponen UI. Digunakan di sini untuk mengatur visibilitas.
-import android.widget.EditText // Komponen UI untuk input teks oleh pengguna.
-import android.widget.Toast // Digunakan untuk menampilkan pesan singkat (notifikasi) kepada pengguna.
-import androidx.appcompat.app.AlertDialog // Digunakan untuk menampilkan dialog konfirmasi atau input.
-import androidx.appcompat.widget.Toolbar // Komponen UI yang berfungsi sebagai ActionBar kustom.
-import androidx.recyclerview.widget.LinearLayoutManager // Mengatur item dalam RecyclerView secara linear (vertikal atau horizontal).
-import androidx.recyclerview.widget.RecyclerView // Komponen UI yang efisien untuk menampilkan daftar data yang besar.
-import com.google.android.material.floatingactionbutton.FloatingActionButton // Tombol aksi mengambang dari Material Design.
-import com.google.gson.Gson // Library untuk konversi objek Java/Kotlin ke JSON dan sebaliknya.
-import com.google.gson.reflect.TypeToken // Digunakan bersama Gson untuk mendapatkan tipe generik (misalnya List<ToDoItem>).
+import android.content.Context
+import android.content.Intent
+import androidx.appcompat.app.AppCompatActivity
+import android.os.Bundle
+import android.util.Log
+import android.view.Menu
+import android.view.MenuItem
+import android.view.View
+import android.widget.EditText
+import android.widget.Toast
+import androidx.appcompat.app.AlertDialog
+import androidx.appcompat.widget.Toolbar
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
+import com.google.android.material.floatingactionbutton.FloatingActionButton
+import com.google.gson.Gson
+import com.google.gson.reflect.TypeToken
 
-// Deklarasi kelas ToDoListActivity yang merupakan turunan dari AppCompatActivity.
-// Ini adalah layar utama tempat pengguna akan melihat dan mengelola daftar tugas mereka.
 class ToDoListActivity : AppCompatActivity() {
 
-    // Deklarasi variabel untuk komponen UI dengan `private lateinit var`.
-    // `lateinit` berarti variabel ini akan diinisialisasi nanti (biasanya di onCreate).
-    private lateinit var toolbar: Toolbar // Toolbar di bagian atas layar.
-    private lateinit var recyclerViewToDoItems: RecyclerView // Untuk menampilkan daftar tugas.
-    private lateinit var fabAddTask: FloatingActionButton // Tombol (+) untuk menambah tugas baru.
-    private lateinit var toDoAdapter: ToDoAdapter // Adapter untuk RecyclerView, menghubungkan data dengan tampilan.
-    private val toDoList = mutableListOf<ToDoItem>() // Daftar (MutableList) yang akan menyimpan objek ToDoItem. Ini adalah sumber data utama untuk adapter.
-    private lateinit var fabDeleteCheckedTasks: FloatingActionButton // Tombol (FAB) untuk menghapus tugas yang terpilih/diceklis.
+    private lateinit var toolbar: Toolbar
+    private lateinit var recyclerViewToDoItems: RecyclerView
+    private lateinit var fabAddTask: FloatingActionButton
+    private lateinit var toDoAdapter: ToDoAdapter
+    private val toDoList = mutableListOf<ToDoItem>()
+    private lateinit var fabDeleteCheckedTasks: FloatingActionButton
 
     // Konstanta untuk nama file dan kunci SharedPreferences tempat data ToDo List disimpan.
     private val PREFS_NAME = "ToDoListPrefs" // Nama file SharedPreferences untuk data ToDo.
@@ -73,7 +67,7 @@ class ToDoListActivity : AppCompatActivity() {
         if (loggedInUserEmail == "default_user") {
             Toast.makeText(this, "Sesi tidak valid, silakan login kembali.", Toast.LENGTH_LONG).show()
             performLogout() // Memanggil fungsi untuk melakukan logout dan kembali ke halaman login.
-            return // Menghentikan eksekusi lebih lanjut dari `onCreate` karena sesi tidak valid.
+            return
         }
 
         // Setup RecyclerView dan memuat data tugas.
@@ -82,7 +76,7 @@ class ToDoListActivity : AppCompatActivity() {
 
         // Mengatur listener klik untuk FAB tambah tugas.
         fabAddTask.setOnClickListener {
-            showAddTaskDialog() // Memanggil fungsi untuk menampilkan dialog penambahan tugas baru.
+            showAddTaskDialog()
         }
 
         // Mengatur listener klik untuk FAB hapus tugas terpilih.
@@ -114,18 +108,17 @@ class ToDoListActivity : AppCompatActivity() {
     private fun updateDeleteButtonVisibility() {
         // Mengecek apakah ada setidaknya satu item di `toDoList` yang properti `isCompleted`-nya `true`.
         val hasCheckedItems = toDoList.any { it.isCompleted }
-        // Jika ada item yang diceklis, tampilkan tombol hapus.
         if (hasCheckedItems) {
             fabDeleteCheckedTasks.visibility = View.VISIBLE
-        } else { // Jika tidak ada, sembunyikan tombol hapus.
+        } else {
             fabDeleteCheckedTasks.visibility = View.GONE
         }
     }
 
     // Fungsi untuk menampilkan dialog penambahan tugas baru.
     private fun showAddTaskDialog() {
-        val builder = AlertDialog.Builder(this) // Membuat builder untuk AlertDialog.
-        builder.setTitle("Tambah Tugas Baru") // Mengatur judul dialog.
+        val builder = AlertDialog.Builder(this)
+        builder.setTitle("Tambah Tugas Baru")
 
         val input = EditText(this) // Membuat EditText secara programatik untuk input teks tugas.
         input.hint = "Masukkan teks tugas" // Mengatur placeholder untuk EditText.
@@ -147,15 +140,14 @@ class ToDoListActivity : AppCompatActivity() {
                 saveToDoItemsToPrefs() // Menyimpan daftar tugas yang sudah diperbarui ke SharedPreferences.
                 updateDeleteButtonVisibility() // Memperbarui visibilitas tombol hapus.
                 dialog.dismiss() // Menutup dialog.
-            } else { // Jika teks tugas kosong, tampilkan pesan error.
+            } else {
                 Toast.makeText(this, "Teks tugas tidak boleh kosong", Toast.LENGTH_SHORT).show()
             }
         }
-        // Mengatur tombol negatif ("Batal") pada dialog.
         builder.setNegativeButton("Batal") { dialog, _ ->
-            dialog.cancel() // Menutup dialog tanpa melakukan apa-apa.
+            dialog.cancel()
         }
-        builder.show() // Menampilkan dialog.
+        builder.show()
     }
 
     // Fungsi untuk menghapus tugas-tugas yang telah diceklis.
